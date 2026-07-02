@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LakerSinceBirth — Tier 2 Prep Board</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root{
+  --ink: #1D1029;
+  --court: #3D1F6E;
+  --court-light: #5B3299;
+  --gold: #FDB927;
+  --gold-dim: #B8890F;
+  --parchment: #F3ECDD;
+  --parchment-dim: #E4D9BF;
+  --chalk: #F5F1E8;
+  --flag-red: #E1533D;
+  --flag-green: #4FA07A;
+  --line: rgba(245,241,232,0.14);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background: radial-gradient(ellipse at top, #2A1547 0%, var(--ink) 55%);
+  color: var(--chalk);
+  font-family:'IBM Plex Sans', sans-serif;
+  min-height:100vh;
+  padding: 28px 20px 80px;
+}
+.wrap{ max-width: 1100px; margin: 0 auto; }
+
+/* ---- Scoreboard header ---- */
+.scoreboard{
+  background: linear-gradient(180deg, var(--court) 0%, #2E1657 100%);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px 28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  gap:16px;
+  box-shadow: 0 20px 50px -25px rgba(0,0,0,0.7);
+}
+.scoreboard h1{
+  font-family:'Teko', sans-serif;
+  font-weight:700;
+  font-size: 52px;
+  letter-spacing: 0.5px;
+  margin:0;
+  line-height:0.9;
+  color: var(--chalk);
+}
+.scoreboard h1 span{ color: var(--gold); }
+.scoreboard .sub{
+  font-family:'Barlow Condensed', sans-serif;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-size:13px;
+  color: rgba(245,241,232,0.6);
+  margin-top:4px;
+}
+.matchup-row{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.matchup-row input{
+  background: rgba(0,0,0,0.25);
+  border:1px solid var(--line);
+  color: var(--chalk);
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:16px;
+  padding:8px 12px;
+  border-radius:6px;
+  width:150px;
+}
+.matchup-row input:focus{ outline:2px solid var(--gold); border-color:transparent; }
+.season-toggle{ display:flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+.season-toggle button{
+  font-family:'Barlow Condensed', sans-serif;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:14px;
+  padding:9px 16px;
+  background:transparent;
+  color: rgba(245,241,232,0.55);
+  border:none;
+  cursor:pointer;
+}
+.season-toggle button.active{ background: var(--gold); color: var(--ink); font-weight:600; }
+
+/* ---- Flags strip ---- */
+.flags{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin: 18px 0 26px;
+  min-height: 34px;
+}
+.flag-chip{
+  font-family:'Barlow Condensed', sans-serif;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:13px;
+  padding:7px 14px;
+  border-radius:100px;
+  border:1px solid var(--gold);
+  color:var(--gold);
+  background: rgba(253,185,39,0.08);
+  display:flex; align-items:center; gap:6px;
+}
+.flag-chip.calm{ opacity:0.35; border-color: var(--line); color: rgba(245,241,232,0.4); background:transparent; }
+.flag-chip::before{ content:"●"; font-size:9px; }
+
+/* ---- Panels ---- */
+.grid{ display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-bottom:18px; }
+@media (max-width: 820px){ .grid{ grid-template-columns: 1fr; } }
+
+.panel{
+  background: var(--parchment);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 20px 22px 22px;
+  position:relative;
+  box-shadow: 0 14px 30px -18px rgba(0,0,0,0.6);
+}
+.panel-head{
+  display:flex; justify-content:space-between; align-items:baseline;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom:8px;
+  margin-bottom:14px;
+}
+.panel-head h2{
+  font-family:'Teko', sans-serif;
+  font-size:26px;
+  letter-spacing:0.5px;
+  margin:0;
+  font-weight:600;
+}
+.panel-head .tag{
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  color: var(--gold-dim);
+}
+.field-row{ display:grid; grid-template-columns: 1fr 1fr; gap:10px 14px; }
+.field{ margin-bottom:10px; }
+.field label{
+  display:block;
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  color: #6B5A3E;
+  margin-bottom:3px;
+}
+.field input{
+  width:100%;
+  border:none;
+  border-bottom: 1.5px solid var(--parchment-dim);
+  background:transparent;
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:15px;
+  font-weight:500;
+  color: var(--ink);
+  padding:4px 2px 6px;
+}
+.field input:focus{ outline:none; border-bottom-color: var(--court); }
+.field input::placeholder{ color:#B7A984; font-weight:400; }
+
+/* ---- Player cards ---- */
+.player-list{ display:flex; flex-direction:column; gap:14px; }
+.player-card{
+  border:1.5px solid var(--parchment-dim);
+  border-radius:6px;
+  padding:14px 16px 8px;
+  position:relative;
+}
+.player-card .remove{
+  position:absolute; top:10px; right:10px;
+  background:none; border:none; color:#B7A984; cursor:pointer; font-size:16px; line-height:1;
+}
+.player-card .remove:hover{ color: var(--flag-red); }
+.player-name-row input{
+  font-family:'Teko', sans-serif;
+  font-size:22px;
+  font-weight:600;
+  border:none; background:transparent; color:var(--ink);
+  width: 70%;
+  padding-bottom:4px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom:12px;
+}
+.player-name-row input:focus{ outline:none; }
+.stat-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:8px 12px; }
+.stat-grid .field label{ font-size:10.5px; }
+.stat-grid .field input{ font-size:14px; }
+.add-player-btn{
+  align-self:flex-start;
+  font-family:'Barlow Condensed', sans-serif;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:13px;
+  background: var(--ink);
+  color: var(--gold);
+  border:none;
+  padding:9px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  margin-top:4px;
+}
+.add-player-btn:hover{ background:#2E1B49; }
+
+textarea{
+  width:100%;
+  min-height: 60px;
+  border:1.5px solid var(--parchment-dim);
+  border-radius:6px;
+  background: rgba(255,255,255,0.4);
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:14px;
+  color: var(--ink);
+  padding:10px 12px;
+  resize:vertical;
+}
+textarea:focus{ outline:2px solid var(--court-light); border-color:transparent; }
+
+/* ---- Thesis panel ---- */
+.thesis-panel{
+  background: linear-gradient(135deg, var(--court) 0%, #2E1657 100%);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:22px 24px;
+  margin-top: 6px;
+}
+.thesis-panel h2{
+  font-family:'Teko', sans-serif;
+  font-size:28px;
+  margin:0 0 4px;
+  color: var(--gold);
+}
+.thesis-panel .hint{
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:13px;
+  letter-spacing:0.5px;
+  color: rgba(245,241,232,0.55);
+  margin-bottom:14px;
+}
+.hook-suggestions{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.hook-suggestion{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:14.5px;
+  background: rgba(0,0,0,0.22);
+  border-left: 3px solid var(--gold);
+  padding:10px 14px;
+  border-radius: 0 5px 5px 0;
+}
+.hook-suggestion b{ color: var(--gold); }
+.thesis-panel textarea{
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--line);
+  color: var(--chalk);
+}
+.thesis-panel textarea::placeholder{ color: rgba(245,241,232,0.35); }
+
+/* ---- Footer actions ---- */
+.actions{
+  display:flex; gap:12px; justify-content:flex-end; margin-top:20px; flex-wrap:wrap;
+}
+.btn{
+  font-family:'Barlow Condensed', sans-serif;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:14px;
+  padding:11px 20px;
+  border-radius:6px;
+  border:1px solid var(--gold);
+  cursor:pointer;
+}
+.btn-primary{ background: var(--gold); color:var(--ink); font-weight:600; }
+.btn-primary:hover{ background:#FFC94D; }
+.btn-ghost{ background:transparent; color: var(--gold); }
+.btn-ghost:hover{ background: rgba(253,185,39,0.1); }
+.status-msg{
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:13px;
+  color: rgba(245,241,232,0.5);
+  align-self:center;
+  margin-right:auto;
+}
+
+.saved-list{ margin-top:14px; }
+.saved-list select{
+  width:100%;
+  background: rgba(0,0,0,0.25);
+  border:1px solid var(--line);
+  color:var(--chalk);
+  padding:9px 10px;
+  border-radius:6px;
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:14px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="scoreboard">
+    <div>
+      <h1>TIER 2 <span>PREP BOARD</span></h1>
+      <div class="sub">LakerSinceBirth — data-driven breakdown builder</div>
+    </div>
+    <div class="matchup-row">
+      <input id="opponent" placeholder="Opponent" />
+      <input id="gameDate" type="date" />
+      <div class="season-toggle">
+        <button id="btnRegular" class="active" onclick="setSeason('regular')">Regular</button>
+        <button id="btnPlayoffs" onclick="setSeason('playoffs')">Playoffs</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="syncPanel" style="margin-bottom:18px;">
+    <div class="panel-head">
+      <h2>Live Sync</h2>
+      <span class="tag">nba_api via GitHub Action</span>
+    </div>
+    <div class="field-row" style="align-items:end;">
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>Raw Data Base URL (from your GitHub repo's /data folder)</label>
+        <input id="syncUrl" placeholder="https://raw.githubusercontent.com/USERNAME/REPO/main/data/">
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+      <button class="add-player-btn" style="margin-top:0;" onclick="fetchLiveStats()">Pull Live Stats</button>
+      <span id="syncStatus" style="font-family:'Barlow Condensed', sans-serif; font-size:13px; color:#6B5A3E;"></span>
+    </div>
+  </div>
+
+  <div class="flags" id="flagsStrip"></div>
+
+  <div class="grid">
+    <!-- TEAM LEVEL -->
+    <div class="panel">
+      <div class="panel-head"><h2>Team Level</h2><span class="tag">Checklist §Team</span></div>
+      <div class="field-row">
+        <div class="field"><label>Record (overall)</label><input id="recordOverall" placeholder="e.g. 34-18"></div>
+        <div class="field"><label>Last 10</label><input id="last10" placeholder="e.g. 6-4"></div>
+        <div class="field"><label>Home / Road</label><input id="homeRoad" placeholder="e.g. 20-6 / 14-12"></div>
+        <div class="field"><label>vs .500+ Teams</label><input id="vs500" placeholder="e.g. 12-11"></div>
+        <div class="field"><label>Off Rating</label><input id="oRtg" type="number" step="0.1" placeholder="e.g. 116.2"></div>
+        <div class="field"><label>Def Rating</label><input id="dRtg" type="number" step="0.1" placeholder="e.g. 114.8"></div>
+        <div class="field"><label>Net Rating</label><input id="netRtg" type="number" step="0.1" placeholder="e.g. 1.4"></div>
+        <div class="field"><label>Pace</label><input id="pace" type="number" step="0.1" placeholder="e.g. 99.5"></div>
+        <div class="field"><label>Bench Pts / Gm</label><input id="benchPts" type="number" step="0.1" placeholder="e.g. 28.4"></div>
+        <div class="field"><label>League Avg Bench Pts</label><input id="leagueAvgBench" type="number" step="0.1" placeholder="e.g. 34.1"></div>
+        <div class="field"><label>Turnover %</label><input id="tovPct" type="number" step="0.1" placeholder="e.g. 13.8"></div>
+        <div class="field"><label>Opp Pts off TOV</label><input id="oppPtsOffTov" type="number" step="0.1" placeholder="e.g. 17.2"></div>
+        <div class="field"><label>Def Reb %</label><input id="drebPct" type="number" step="0.1" placeholder="e.g. 71.5"></div>
+      </div>
+    </div>
+
+    <!-- ROTATION / FRONT OFFICE stacked -->
+    <div style="display:flex; flex-direction:column; gap:18px;">
+      <div class="panel">
+        <div class="panel-head"><h2>Rotation & Coaching</h2><span class="tag">Checklist §Rotation</span></div>
+        <div class="field"><label>Top 5-Man Lineup</label><input id="topLineup" placeholder="e.g. Starters"></div>
+        <div class="field-row">
+          <div class="field"><label>That Lineup's Net Rtg</label><input id="topLineupNet" type="number" step="0.1" placeholder="e.g. -3.2"></div>
+          <div class="field"><label>Q4 Lineup Notes</label><input id="q4Lineup" placeholder="closing 5 / substitution pattern"></div>
+        </div>
+        <div class="field"><label>Minutes Distribution / Rest Notes</label>
+          <textarea id="minutesNotes" placeholder="Who's over/under minutes, back-to-back management..."></textarea>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Front Office</h2><span class="tag">Checklist §FO</span></div>
+        <div class="field-row">
+          <div class="field"><label>Cap Space / Lux Tax</label><input id="capSpace" placeholder="e.g. $4.2M over apron"></div>
+          <div class="field"><label>Draft Assets Left</label><input id="draftAssets" placeholder="e.g. 2027 1st (top-4 prot.)"></div>
+        </div>
+        <div class="field"><label>Move Being Graded (years / $ / options)</label><input id="moveDetails" placeholder="e.g. 3yr/$54M, player option Y3"></div>
+        <div class="field"><label>What the Alternative Would've Cost</label>
+          <textarea id="altCost" placeholder="Comparable player/deal that was on the table..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYER LEVEL -->
+  <div class="panel" style="margin-bottom:18px;">
+    <div class="panel-head"><h2>Player Level</h2><span class="tag">Checklist §Player</span></div>
+    <div class="player-list" id="playerList"></div>
+    <button class="add-player-btn" onclick="addPlayer()">+ Add Player</button>
+  </div>
+
+  <!-- THESIS BUILDER -->
+  <div class="thesis-panel">
+    <h2>Thesis Builder</h2>
+    <div class="hint">Auto-suggested hooks based on the flags above — rotate these against your Hook Formulas list.</div>
+    <div class="hook-suggestions" id="hookSuggestions"></div>
+    <div class="field"><label style="color:rgba(245,241,232,0.55)">Your Thesis / Script Notes</label>
+      <textarea id="thesisNotes" placeholder="One sentence stating exactly what you're about to prove..."></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <span class="status-msg" id="statusMsg"></span>
+    <button class="btn btn-ghost" onclick="newSnapshot()">New Blank Prep</button>
+    <button class="btn btn-primary" onclick="saveSnapshot()">Save Prep Sheet</button>
+  </div>
+
+  <div class="panel saved-list">
+    <div class="panel-head"><h2 style="font-size:20px;">Saved Prep Sheets</h2></div>
+    <select id="savedSelect" onchange="loadSelected()">
+      <option value="">— Select a saved sheet to load —</option>
+    </select>
+  </div>
+
+</div>
+
+<script>
+let season = 'regular';
+let playerCount = 0;
+let currentId = null;
+
+function setSeason(s){
+  season = s;
+  document.getElementById('btnRegular').classList.toggle('active', s==='regular');
+  document.getElementById('btnPlayoffs').classList.toggle('active', s==='playoffs');
+  computeFlags();
+}
+
+function playerFieldTemplate(idx){
+  return `
+  <div class="player-card" data-idx="${idx}">
+    <button class="remove" onclick="removePlayer(${idx})" title="Remove">✕</button>
+    <div class="player-name-row"><input placeholder="Player name" data-key="name"></div>
+    <div class="stat-grid">
+      <div class="field"><label>PTS</label><input type="number" step="0.1" data-key="pts"></div>
+      <div class="field"><label>REB</label><input type="number" step="0.1" data-key="reb"></div>
+      <div class="field"><label>AST</label><input type="number" step="0.1" data-key="ast"></div>
+      <div class="field"><label>USG%</label><input type="number" step="0.1" data-key="usg"></div>
+      <div class="field"><label>FG%</label><input type="number" step="0.1" data-key="fgPct"></div>
+      <div class="field"><label>3P%</label><input type="number" step="0.1" data-key="threePct"></div>
+      <div class="field"><label>FT%</label><input type="number" step="0.1" data-key="ftPct"></div>
+      <div class="field"><label>eFG%</label><input type="number" step="0.1" data-key="efgPct"></div>
+      <div class="field"><label>+/- (game)</label><input type="number" step="0.1" data-key="plusMinus"></div>
+      <div class="field"><label>+/- (10-gm roll)</label><input type="number" step="0.1" data-key="plusMinus10"></div>
+      <div class="field"><label>Clutch FG%</label><input type="number" step="0.1" data-key="clutchFgPct"></div>
+      <div class="field"><label>On/Off Net</label><input type="number" step="0.1" data-key="onOffNet"></div>
+    </div>
+  </div>`;
+}
+
+function addPlayer(prefill){
+  const idx = playerCount++;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = playerFieldTemplate(idx);
+  const card = wrap.firstElementChild;
+  document.getElementById('playerList').appendChild(card);
+  if(prefill){
+    Object.keys(prefill).forEach(k=>{
+      const el = card.querySelector(`[data-key="${k}"]`);
+      if(el) el.value = prefill[k];
+    });
+  }
+  card.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', computeFlags));
+}
+
+function removePlayer(idx){
+  const card = document.querySelector(`.player-card[data-idx="${idx}"]`);
+  if(card) card.remove();
+  computeFlags();
+}
+
+function getPlayers(){
+  return Array.from(document.querySelectorAll('.player-card')).map(card=>{
+    const obj = {};
+    card.querySelectorAll('input').forEach(inp=>{ obj[inp.dataset.key] = inp.value; });
+    return obj;
+  });
+}
+
+function num(id){
+  const v = document.getElementById(id).value;
+  return v === '' ? null : parseFloat(v);
+}
+function str(id){ return document.getElementById(id).value; }
+
+function computeFlags(){
+  const flags = [];
+  const netRtg = num('netRtg');
+  const benchPts = num('benchPts');
+  const leagueAvgBench = num('leagueAvgBench');
+  const topLineupNet = num('topLineupNet');
+  const tovPct = num('tovPct');
+  const oppPtsOffTov = num('oppPtsOffTov');
+
+  if(netRtg !== null && netRtg < 0) flags.push('Negative Net Rating');
+  if(benchPts !== null && leagueAvgBench !== null && benchPts < leagueAvgBench) flags.push('Bench Below League Avg');
+  if(topLineupNet !== null && topLineupNet < 0) flags.push('Top Lineup Underwater');
+  if(tovPct !== null && tovPct > 15) flags.push('Turnover Prone');
+  if(oppPtsOffTov !== null && oppPtsOffTov > 18) flags.push('Bleeding Pts off TOV');
+
+  const players = getPlayers();
+  players.forEach(p=>{
+    if(!p.name) return;
+    const usg = parseFloat(p.usg), pm10 = parseFloat(p.plusMinus10), clutch = parseFloat(p.clutchFgPct), onOff = parseFloat(p.onOffNet);
+    if(!isNaN(usg) && !isNaN(pm10) && usg > 26 && pm10 < 0) flags.push(`${p.name}: Usage vs Impact Mismatch`);
+    if(!isNaN(clutch) && clutch < 35) flags.push(`${p.name}: Clutch Struggles`);
+    if(!isNaN(onOff) && onOff < -3) flags.push(`${p.name}: Team Worse With Him On`);
+  });
+
+  const stripEl = document.getElementById('flagsStrip');
+  if(flags.length === 0){
+    stripEl.innerHTML = `<div class="flag-chip calm">No flags yet — fill in the checklist to surface story angles</div>`;
+  } else {
+    stripEl.innerHTML = flags.map(f=>`<div class="flag-chip">${f}</div>`).join('');
+  }
+
+  renderHookSuggestions(flags, players);
+}
+
+function renderHookSuggestions(flags, players){
+  const el = document.getElementById('hookSuggestions');
+  if(flags.length === 0){
+    el.innerHTML = `<div class="hook-suggestion" style="opacity:0.5">Fill in stats above and hooks will suggest themselves here.</div>`;
+    return;
+  }
+  const suggestions = [];
+  flags.forEach(f=>{
+    if(f === 'Bench Below League Avg') suggestions.push(`<b>The Callout:</b> "The Lakers' bench is quietly killing this season. Here's the proof."`);
+    if(f === 'Negative Net Rating') suggestions.push(`<b>The Grade:</b> "That win felt good. The net rating says something else."`);
+    if(f === 'Top Lineup Underwater') suggestions.push(`<b>The Question:</b> "Why is the starting five still getting the fourth quarter?"`);
+    if(f.includes('Usage vs Impact Mismatch')) suggestions.push(`<b>The Stat Shock:</b> "${f.split(':')[0]} is using more possessions than ever — and the team is worse for it."`);
+    if(f.includes('Clutch Struggles')) suggestions.push(`<b>The Stat Shock:</b> "${f.split(':')[0]} is shooting under 35% in the clutch. Nobody's talking about it."`);
+    if(f === 'Turnover Prone') suggestions.push(`<b>The Contrarian:</b> "Everybody's blaming the defense. It's the turnovers."`);
+  });
+  el.innerHTML = [...new Set(suggestions)].slice(0,4).map(s=>`<div class="hook-suggestion">${s}</div>`).join('');
+}
+
+function collectSnapshot(){
+  return {
+    id: currentId || `prep_${Date.now()}`,
+    savedAt: new Date().toISOString(),
+    opponent: str('opponent'),
+    gameDate: str('gameDate'),
+    season,
+    team: {
+      recordOverall: str('recordOverall'), last10: str('last10'), homeRoad: str('homeRoad'), vs500: str('vs500'),
+      oRtg: str('oRtg'), dRtg: str('dRtg'), netRtg: str('netRtg'), pace: str('pace'),
+      benchPts: str('benchPts'), leagueAvgBench: str('leagueAvgBench'),
+      tovPct: str('tovPct'), oppPtsOffTov: str('oppPtsOffTov'), drebPct: str('drebPct')
+    },
+    rotation: {
+      topLineup: str('topLineup'), topLineupNet: str('topLineupNet'), q4Lineup: str('q4Lineup'), minutesNotes: str('minutesNotes')
+    },
+    frontOffice: {
+      capSpace: str('capSpace'), draftAssets: str('draftAssets'), moveDetails: str('moveDetails'), altCost: str('altCost')
+    },
+    players: getPlayers(),
+    thesisNotes: str('thesisNotes')
+  };
+}
+
+function applySnapshot(s){
+  document.getElementById('opponent').value = s.opponent || '';
+  document.getElementById('gameDate').value = s.gameDate || '';
+  setSeason(s.season || 'regular');
+  const t = s.team || {};
+  ['recordOverall','last10','homeRoad','vs500','oRtg','dRtg','netRtg','pace','benchPts','leagueAvgBench','tovPct','oppPtsOffTov','drebPct'].forEach(k=>{
+    if(document.getElementById(k)) document.getElementById(k).value = t[k] || '';
+  });
+  const r = s.rotation || {};
+  document.getElementById('topLineup').value = r.topLineup || '';
+  document.getElementById('topLineupNet').value = r.topLineupNet || '';
+  document.getElementById('q4Lineup').value = r.q4Lineup || '';
+  document.getElementById('minutesNotes').value = r.minutesNotes || '';
+  const f = s.frontOffice || {};
+  document.getElementById('capSpace').value = f.capSpace || '';
+  document.getElementById('draftAssets').value = f.draftAssets || '';
+  document.getElementById('moveDetails').value = f.moveDetails || '';
+  document.getElementById('altCost').value = f.altCost || '';
+  document.getElementById('thesisNotes').value = s.thesisNotes || '';
+
+  document.getElementById('playerList').innerHTML = '';
+  playerCount = 0;
+  (s.players || []).forEach(p => addPlayer(p));
+
+  currentId = s.id;
+  computeFlags();
+}
+
+function newSnapshot(){
+  currentId = null;
+  ['opponent','gameDate','recordOverall','last10','homeRoad','vs500','oRtg','dRtg','netRtg','pace','benchPts','leagueAvgBench','tovPct','oppPtsOffTov','drebPct','topLineup','topLineupNet','q4Lineup','minutesNotes','capSpace','draftAssets','moveDetails','altCost','thesisNotes'].forEach(k=>{
+    if(document.getElementById(k)) document.getElementById(k).value = '';
+  });
+  document.getElementById('playerList').innerHTML = '';
+  playerCount = 0;
+  setSeason('regular');
+  computeFlags();
+  setStatus('Blank prep sheet ready.');
+}
+
+function setStatus(msg){
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  setTimeout(()=>{ if(el.textContent === msg) el.textContent = ''; }, 3500);
+}
+
+async function saveSnapshot(){
+  const snap = collectSnapshot();
+  currentId = snap.id;
+  try{
+    const result = await window.storage.set(`prep:${snap.id}`, JSON.stringify(snap));
+    if(!result){ setStatus('Save failed — try again.'); return; }
+    let indexRes;
+    try{ indexRes = await window.storage.get('prep-index'); }catch(e){ indexRes = null; }
+    let index = [];
+    if(indexRes){ try{ index = JSON.parse(indexRes.value); }catch(e){ index = []; } }
+    index = index.filter(i => i.id !== snap.id);
+    index.unshift({ id: snap.id, label: labelFor(snap) });
+    await window.storage.set('prep-index', JSON.stringify(index));
+    setStatus('Saved.');
+    refreshSavedList(index);
+  }catch(err){
+    setStatus('Storage error — could not save.');
+  }
+}
+
+function labelFor(snap){
+  const opp = snap.opponent ? `vs ${snap.opponent}` : 'Untitled';
+  const date = snap.gameDate || '';
+  const seasonLabel = snap.season === 'playoffs' ? 'Playoffs' : 'Reg';
+  return `${opp} — ${date} (${seasonLabel})`;
+}
+
+function refreshSavedList(index){
+  const sel = document.getElementById('savedSelect');
+  sel.innerHTML = '<option value="">— Select a saved sheet to load —</option>' +
+    index.map(i => `<option value="${i.id}">${i.label}</option>`).join('');
+}
+
+async function loadSelected(){
+  const id = document.getElementById('savedSelect').value;
+  if(!id) return;
+  try{
+    const res = await window.storage.get(`prep:${id}`);
+    if(res){
+      applySnapshot(JSON.parse(res.value));
+      setStatus('Loaded.');
+    }
+  }catch(err){
+    setStatus('Could not load that sheet.');
+  }
+}
+
+function setSyncStatus(msg){
+  document.getElementById('syncStatus').textContent = msg;
+}
+
+async function fetchLiveStats(){
+  let base = document.getElementById('syncUrl').value.trim();
+  if(!base){ setSyncStatus('Paste your raw GitHub data URL first.'); return; }
+  if(!base.endsWith('/')) base += '/';
+  const file = season === 'playoffs' ? 'playoffs.json' : 'regular.json';
+  const url = base + file;
+
+  setSyncStatus('Fetching...');
+  try{
+    const res = await fetch(url, { cache: 'no-store' });
+    if(!res.ok){ setSyncStatus(`Fetch failed (${res.status}). Check the URL and that the Action has run at least once.`); return; }
+    const data = await res.json();
+
+    // Team fields
+    const t = data.team || {};
+    Object.keys(t).forEach(k=>{
+      const el = document.getElementById(k);
+      if(el && t[k] !== null && t[k] !== undefined) el.value = t[k];
+    });
+
+    // Rotation fields (auto-fillable subset only — Q4/minutes notes stay manual)
+    const r = data.rotation || {};
+    if(r.topLineup !== undefined) document.getElementById('topLineup').value = r.topLineup ?? '';
+    if(r.topLineupNet !== undefined) document.getElementById('topLineupNet').value = r.topLineupNet ?? '';
+
+    // Players — replace the auto-pulled roster, preserving nothing manual here
+    // since these are all live-sourced fields per the checklist.
+    if(Array.isArray(data.players)){
+      document.getElementById('playerList').innerHTML = '';
+      playerCount = 0;
+      data.players.forEach(p => addPlayer(p));
+    }
+
+    computeFlags();
+    const stamp = data.generatedAt ? new Date(data.generatedAt).toLocaleString() : 'unknown time';
+    setSyncStatus(`Synced. Snapshot generated ${stamp}.`);
+
+    try{ await window.storage.set('sync-url', base); }catch(e){ /* non-fatal */ }
+  }catch(err){
+    setSyncStatus('Could not reach that URL. Check it\'s public and CORS-friendly (raw.githubusercontent.com works).');
+  }
+}
+
+async function init(){
+  document.querySelectorAll('input, textarea').forEach(el=>{
+    if(!el.closest('.player-card')) el.addEventListener('input', computeFlags);
+  });
+  addPlayer();
+  computeFlags();
+  try{
+    const indexRes = await window.storage.get('prep-index');
+    if(indexRes){
+      const index = JSON.parse(indexRes.value);
+      refreshSavedList(index);
+    }
+  }catch(err){ /* no saved sheets yet */ }
+  try{
+    const urlRes = await window.storage.get('sync-url');
+    if(urlRes) document.getElementById('syncUrl').value = urlRes.value;
+  }catch(err){ /* no saved url yet */ }
+}
+init();
+</script>
+</body>
+</html>
